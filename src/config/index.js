@@ -1,0 +1,42 @@
+
+var DB = require('./db');
+var SMTP = require('./SMTPmailConfig.js');
+
+var main = {
+	development: {
+		name: 'Karthik SG',
+		port: process.env.PORT || 3500
+	},
+	production: {
+		name: 'Karthik SG',
+		port: process.env.PORT || 3500
+	},
+	db: new DB(),
+	smtp_config: {
+	    host: "smtp.gmail.com",
+	    port: 465,
+	    secure: true, 
+	    auth: {
+	        user: "karthisg.sg@gmail.com",
+	        pass: "vijisgk97"
+	    }
+	},
+	session_time: 999999999999,
+	liveUrl: 'https://bday.karthisgk.be',
+	initApp: function(dir){
+		main.app_dir = dir;
+		return main;
+	},
+	setSMTPConfig: function(cb){
+		main.db.get('settings', {}, (settings) => {
+			var smtp;
+			if(settings.length > 0)
+				smtp = new SMTP(settings[0].smtp_config);
+			else
+				smtp = new SMTP(main.smtp_config);
+			cb(smtp);
+		});
+	}
+};
+
+module.exports = main;
