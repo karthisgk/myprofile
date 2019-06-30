@@ -5,11 +5,11 @@ var SMTP = require('./SMTPmailConfig.js');
 var main = {
 	development: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 3500
+		port: process.env.PORT || 5000
 	},
 	production: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 3500
+		port: process.env.PORT || 5000
 	},
 	db: new DB(),
 	smtp_config: {
