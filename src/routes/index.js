@@ -108,6 +108,10 @@ function Routes(app){
 			res.status(404).send('404 Error');
 	});
 
+	app.get('/sgk', function(req, res){
+		res.render('admin/index', {});
+	});
+
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'/profileimage" method="post" enctype="multipart/form-data">\
 		  <p><input type="file" name="prof">\
