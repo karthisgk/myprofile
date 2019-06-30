@@ -7,6 +7,27 @@ String.prototype.getCharCode = function(){
 	return rt;
 };
 
+const crypto = require('crypto');
+const algorithm = 'aes-256-cbc';
+const key = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+
+function encrypt(text) {
+ let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+ let encrypted = cipher.update(text);
+ encrypted = Buffer.concat([encrypted, cipher.final()]);
+ return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
+}
+
+function decrypt(text) {
+ let iv = Buffer.from(text.iv, 'hex');
+ let encryptedText = Buffer.from(text.encryptedData, 'hex');
+ let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+ let decrypted = decipher.update(encryptedText);
+ decrypted = Buffer.concat([decrypted, decipher.final()]);
+ return decrypted.toString();
+}
+
 var codeKey = 'SGK_';
 var responses = [
 	{
@@ -52,6 +73,8 @@ var responses = [
 ];
 
 module.exports = {
+	encrypt: encrypt,
+	decrypt: decrypt,
 	uniqueid: function() {
 		  function s4() {
 		    return Math.floor((1 + Math.random()) * 0x10000)
@@ -101,6 +124,23 @@ module.exports = {
 			}
 		});
 		return rt;
+	},
+	getCrptoToken: function(n = 16){
+		return crypto.randomBytes(n).toString('hex');
+	},
+	getPasswordHash: function(password){
+		var salt = crypto.randomBytes(16).toString('hex');
+	    return {salt: salt, hash: crypto.pbkdf2Sync(password, salt,  
+	    1000, 64, `sha512`).toString(`hex`)};
+	},
+	validatePassword: function(exist, password){
+
+		if(!exist.salt || !exist.hash)
+			return false;
+
+		var hash = crypto.pbkdf2Sync(password,  
+	    exist.salt, 1000, 64, `sha512`).toString(`hex`); 
+	    return exist.hash === hash;
 	},
 	getCharCode: function(str){
 		return str.getCharCode();

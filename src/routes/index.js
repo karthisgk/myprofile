@@ -5,6 +5,7 @@ var multer  = require('multer');
 var path = require('path');
 const fs = require('fs');
 var request = require('request');
+var SMTP = require('../config/SMTPmailConfig.js');
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -45,9 +46,6 @@ String.prototype.isEmail = function(){
 function Routes(app){
 	var self = this;
 	self.db = require('../config').db;
-	appConfig.setSMTPConfig((smtp) => {
-		this.smtp = smtp;
-	});
 
 	app.get('/', function(req, res){
 		res.render('index', {});
@@ -65,22 +63,35 @@ function Routes(app){
 	    	return;
 	    }
 
-	    var adminMail = appConfig.smtp_config.auth.user;
-	    var content = '<h3>'+ req.body.name +'</h3>';
-		content += '<h4>' + req.body.emailAddress + '</h4>'; 
-		content += '<p>' + req.body.message + '</p>';
-	    self.smtp.getFile({title: 'contact-form', content: content}, (d) => {
-			var mail = {
-			    from: adminMail,
-			    to: 'karthisg.sg2@gmail.com',
-			    subject: 'contact-form - karthisgk.be' ,
-			    html: d.html
-			};
-			self.smtp.sendMail(mail, (err, res) => {
-				if (err) {console.log(err);}
-				
+
+		var onSendMail = function(smtp){
+		    var adminMail = appConfig.smtp_config.auth.user;
+		    var content = '<h3>'+ req.body.name +'</h3>';
+			content += '<h4>' + req.body.emailAddress + '</h4>'; 
+			content += '<p>' + req.body.message + '</p>';
+		    smtp.getFile({title: 'contact-form', content: content}, (d) => {
+				var mail = {
+				    from: adminMail,
+				    to: 'karthisg.sg2@gmail.com',
+				    subject: 'contact-form - karthisgk.be' ,
+				    html: d.html
+				};
+				smtp.sendMail(mail, (err, res) => {
+					if (err) {console.log(err);}
+					
+				});
 			});
+		};
+		self.db.get('settings', {}, (data) => {
+			if(data.length > 0){
+				data = data[0];
+				var cfg = appConfig.smtp_config;
+				cfg.auth.user = data.smtp_user;
+				cfg.auth.pass = data.smtp_password;
+				onSendMail(new SMTP(cfg));
+			}
 		});
+
 		res.json({code: 'sgk_512', message: 'Contact details are submitted'});
 	});
 

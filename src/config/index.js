@@ -17,8 +17,8 @@ var main = {
 	    port: 465,
 	    secure: true, 
 	    auth: {
-	        user: "karthisg.sg@gmail.com",
-	        pass: "vijisgk97"
+	        user: "",
+	        pass: ""
 	    }
 	},
 	session_time: 999999999999,
