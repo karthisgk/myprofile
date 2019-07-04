@@ -1,3 +1,4 @@
+
 Contributing to yii2-widget-select2
 ===================================
 Looking to contribute something to yii2-widget-select2? **Here's how you can help.**

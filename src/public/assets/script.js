@@ -1,4 +1,5 @@
 
+
 window.onload = function () {
 	var chart1 = document.getElementById("line-chart");
 	if(chart1 != null) {
