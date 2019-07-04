@@ -69,6 +69,21 @@ var responses = [
 		code: codeKey + '008',
 		message: 'Enter valid email address or mobile number',
 		data: {}
+	},
+	{
+		code: codeKey + '009',
+		message: 'Invalid Email Address!',
+		data: {}
+	},
+	{
+		code: codeKey + '010',
+		message: 'Invalid credentials!',
+		data: {}
+	},
+	{
+		code: codeKey + '011',
+		message: 'Invalid Access Token!',
+		data: {}
 	}
 ];
 

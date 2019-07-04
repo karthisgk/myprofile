@@ -6,6 +6,7 @@ var path = require('path');
 const fs = require('fs');
 var request = require('request');
 var SMTP = require('../config/SMTPmailConfig.js');
+var Admin = require('./admin.js');
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -46,7 +47,7 @@ String.prototype.isEmail = function(){
 function Routes(app){
 	var self = this;
 	self.db = require('../config').db;
-
+	Admin = new Admin();
 	app.get('/', function(req, res){
 		res.render('index', {});
 	});
@@ -108,9 +109,13 @@ function Routes(app){
 			res.status(404).send('404 Error');
 	});
 
-	app.get('/sgk', function(req, res){
-		res.render('admin/index', {});
-	});
+	app.get('/sgk', Admin.auth(), Admin.index);
+
+	app.get('/sgk/login', Admin.auth(), Admin.loginView);
+
+	app.post('/sgk/login', Admin.loginApi);
+
+	app.get('/sgk/logout', Admin.auth(), Admin.logOut);
 
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'/profileimage" method="post" enctype="multipart/form-data">\
