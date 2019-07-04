@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 ﻿AUTHOR
 
 jQuery TE 1.4.0 , http://jqueryte.com/
 Copyright (C) 2013, Fatih Koca (fattih@fattih.com), (http://jqueryte.com/about)
 
+=======
+﻿AUTHOR
+
+jQuery TE 1.4.0 , http://jqueryte.com/
+Copyright (C) 2013, Fatih Koca (fattih@fattih.com), (http://jqueryte.com/about)
+
+>>>>>>> 1ca91f38f96c8e70f794c0e70f20752ff2c63959
 jQuery TE is provided under the MIT LICENSE.
