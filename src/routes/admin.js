@@ -112,7 +112,7 @@ Admin.prototype.logOut = function(req, res){
 		|| typeof data.accessToken == 'string' ? [] : data.accessToken;
 	tokens.splice(tokens.indexOf(req.accessToken), 1);
 	config.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
-		req.session = {};
+		delete req.session.accessToken;
 		res.json(common.getResponses('001', {}));
 	});
 };
