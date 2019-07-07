@@ -56,7 +56,7 @@ Admin.prototype.auth = function(){
 					next();
 				}
 				else
-					res.json(common.getResponses('011', {}));
+					next();
 			});
 
 		}else
