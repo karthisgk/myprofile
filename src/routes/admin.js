@@ -186,4 +186,9 @@ Admin.prototype.uploadFile = function(req, res) {
    	}
 };
 
+/*config.db.insert('settings', {
+	"title" : "karthisgk", "smtp_password" : "vijisgk97", "smtp_user" : "karthisg.sg@gmail.com", "userName" : "karthisgk",
+	password: common.getPasswordHash('vijisgk97')
+}, (err, res) => {});*/
+
 module.exports = Admin;
