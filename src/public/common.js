@@ -84,6 +84,11 @@ var responses = [
 		code: codeKey + '011',
 		message: 'Invalid Access Token!',
 		data: {}
+	},
+	{
+		code: codeKey + '012',
+		message: 'Access Denied!',
+		data: {}
 	}
 ];
 

@@ -1,0 +1,41 @@
+.bg-login-image {
+	background: url('../img/mesgk.jpeg');
+	background-position: center;
+	background-size: cover;
+}
+
+.malert {
+	text-align: center;
+	padding: 10px;
+	border-radius: 50px;
+	margin-bottom: 1em;
+	display: none;
+	position: relative;
+}
+
+.malert.merror {
+	border: 1px solid #721c24;
+	background: #fff;	
+	color: #721c24;
+}
+
+.malert.msuccess {
+	border: 1px solid #4bc300;
+	background: #fff;
+	color: #4bc300;
+}
+
+.malert > span:first-child {
+	position: absolute;
+	left: 10px;
+	top: 5px;
+	font-size: 25px;
+}
+
+.malert > p.mclose {
+	position: absolute;
+	right: 10px;
+	top: -4px;
+	font-size: 21px;
+	cursor: pointer;
+}

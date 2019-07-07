@@ -17,6 +17,7 @@
 
     <!-- Custom styles for this template-->
     <link href="../admin_assets/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="../admin_assets/css/custom.css" rel="stylesheet">
 
 </head>
 
@@ -40,6 +41,12 @@
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
                                     <form class="user">
+
+                                        <div class="malert merror">
+                                            <span>!</span>
+                                            <p class="mclose">x</p>
+                                        </div>
+
                                         <div class="form-group" >
                                             <input type="text" class="form-control form-control-user" id="user-name" aria-describedby="emailHelp" placeholder="Enter User name..." />
                                         </div>
@@ -63,7 +70,7 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="forgot-password.html">Forgot Password?</a>
+                                        <a class="small" id="reset-pass" href="#">Reset Password?</a>
                                     </div>
                                     <!-- <div class="text-center">
                                         <a class="small" href="register.html">Create an Account!</a>

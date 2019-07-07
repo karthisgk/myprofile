@@ -35,21 +35,26 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" id="logout-btn" href="#">Logout</a>
                 </div>
             </div>
         </div>
     </div>
 
+    <script type="text/javascript">
+        var accessToken = '<%=accessToken%>';
+    </script>
+
     <!-- Bootstrap core JavaScript-->
-    <script id="jquery" src="admin_assets/vendor/jquery/jquery.min.js"></script>
-    <script class="script" src="admin_assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script id="jquery" src="<%=liveUrl;%>admin_assets/vendor/jquery/jquery.min.js"></script>
+    <script class="script" src="<%=liveUrl;%>admin_assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script class="script" src="admin_assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script class="script" src="<%=liveUrl;%>admin_assets/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script class="script" src="admin_assets/js/sb-admin-2.min.js"></script>
+    <script class="script" src="<%=liveUrl;%>admin_assets/js/sb-admin-2.min.js"></script>
+    <script src="<%=liveUrl;%>admin_assets/js/script.js"></script>
 
 </body>
 

@@ -32,6 +32,19 @@ var upload = multer({ storage: storage,
 		}
 	} });
 
+var uploadFile = multer({ storage: multer.diskStorage({
+	destination: function (req, file, cb) {
+		var dir = './src/uploads/tmp/';
+		if (!fs.existsSync(dir)){
+		    fs.mkdirSync(dir);
+		}
+	    cb(null, dir);
+	},
+	filename: function (req, file, cb) {
+	    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+	}
+}) });
+
 var passData = {};
 var baseurl = appConfig.liveUrl;
 
@@ -116,6 +129,10 @@ function Routes(app){
 	app.post('/sgk/login', Admin.loginApi);
 
 	app.get('/sgk/logout', Admin.auth(), Admin.logOut);
+
+	app.get('/sgk/getfile', Admin.auth(), Admin.getFile);
+
+	app.post('/sgk/uploadfile', Admin.auth(), uploadFile.single('file'), Admin.uploadFile);
 
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'/profileimage" method="post" enctype="multipart/form-data">\

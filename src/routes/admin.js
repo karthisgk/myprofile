@@ -14,12 +14,18 @@ String.prototype.isEmail = function(){
 };
 
 function Admin() {
-	this.db = config.db;
+	config.db = config.db;
 }
 
 Admin.prototype.index = function(req, res){
-	if(req.hasOwnProperty('accessToken'))
-		res.render('admin/index', {});
+	if(req.hasOwnProperty('accessToken')){
+		var dt = {
+			accessToken: req.accessToken,
+			liveUrl: config.liveUrl,
+			admin: req.accessUser
+		};
+		res.render('admin/index', dt);
+	}
 	else
 		res.redirect('/sgk/login');
 };
@@ -36,6 +42,11 @@ Admin.prototype.auth = function(){
 	return function(req, res, next){
 
 		if(req.session.hasOwnProperty('token')){
+
+			if(req.session.accessToken == ''){
+				next();
+				return;
+			}
 
 			var token = req.session.token;
 			self.isValidAccessToken(token, (isValid, user) => {
@@ -54,14 +65,13 @@ Admin.prototype.auth = function(){
 };
 
 Admin.prototype.isValidAccessToken = function(token, cb){
-	this.db.get('settings', {accessToken: {$all: [token]}}, (data) => {
+	config.db.get('settings', {accessToken: {$all: [token]}}, (data) => {
 		if(data.length > 0)
 		    cb(true, data[0]);
 		else
 			cb(false, data);
 	});
 };
-
 
 Admin.prototype.loginApi = function(req, res){
 	var self = this;
@@ -71,7 +81,7 @@ Admin.prototype.loginApi = function(req, res){
 		return;
 	}
 
-	this.db.get('settings', {}, data => {
+	config.db.get('settings', {}, data => {
 		if(data.length > 0){
 			data = data[0];
 			if(data.userName == req.body.userName && 
@@ -81,7 +91,7 @@ Admin.prototype.loginApi = function(req, res){
 				|| typeof data.accessToken == 'string' ? [] : data.accessToken;
 				tokens.push(token);
 				req.session.token = token;
-				self.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
+				config.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
 					res.json(common.getResponses('001', {accessToken: token}));
 				});		
 			}else
@@ -101,9 +111,79 @@ Admin.prototype.logOut = function(req, res){
 	var tokens = !data.hasOwnProperty('accessToken') || typeof data.accessToken.length == 'undefined'
 		|| typeof data.accessToken == 'string' ? [] : data.accessToken;
 	tokens.splice(tokens.indexOf(req.accessToken), 1);
-	self.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
+	config.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
+		req.session.accessToken = '';
 		res.json(common.getResponses('001', {}));
 	});
+};
+
+Admin.prototype.getFile = function(req, res) {
+
+	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
+		res.redirect('/sgk/login');
+		return;
+	}
+
+	if(!req.query.hasOwnProperty('file')){
+		var dt = {
+			accessToken: req.accessToken,
+			liveUrl: config.liveUrl,
+			admin: req.accessUser
+		};
+		res.render('admin/getfile', dt);
+		return;
+	}
+	
+	var filePath = __dirname + '/../' + req.query.file;
+	if (fs.existsSync(filePath))
+		res.sendFile(path.resolve(filePath));
+	else
+		res.send('404 Error');
+};
+
+Admin.prototype.uploadFile = function(req, res) {	
+
+	if(!req.file){
+		res.json(common.getResponses('002', {}));
+		return;
+	}	
+	
+	if(!req.file.path || !req.body.targetfile){
+		res.json(common.getResponses('002', {}));
+		return;
+	}
+
+	var removeUpload = function(){
+		if (fs.existsSync(req.file.path))
+			fs.unlinkSync(req.file.path);
+	};
+
+	var filePath = __dirname + '/../' + req.body.targetfile;
+	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
+		removeUpload();
+		res.json(common.getResponses('012', {}));
+		return;
+	}
+
+	if(typeof req.fileError != 'undefined'){
+		removeUpload();
+		res.json(common.getResponses('003', {}));
+		return;
+	}
+
+	try {
+
+		if (fs.existsSync(filePath))
+		    fs.unlinkSync(filePath);
+
+		fs.renameSync(req.file.path, filePath);
+			res.json(common.getResponses('001', {}));
+   		
+   	} catch (err) {
+   		removeUpload();
+		res.json(common.getResponses('003', {}));
+		return;
+   	}
 };
 
 module.exports = Admin;
