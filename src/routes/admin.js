@@ -117,6 +117,22 @@ Admin.prototype.logOut = function(req, res){
 	});
 };
 
+Admin.prototype.saveAbout = function(req, res) {
+	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
+		res.json(common.getResponses('011', {}));
+		return;
+	}
+
+	if(!req.body.aboutMe){
+		res.json(common.getResponses('002', {}));
+		return;
+	}
+
+	config.db.update('settings', {}, {aboutMe: req.body.aboutMe}, (err, result) => {
+		res.json(common.getResponses('001', {}));
+	});
+};
+
 Admin.prototype.getFile = function(req, res) {
 
 	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){

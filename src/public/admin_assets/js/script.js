@@ -101,9 +101,60 @@ var uploadFile = function(e) {
 	}
 };
 
+var appendAbout = function(e){
+	var aboutTtext = $('#about-text').val();
+	if(aboutTtext.trim() == '')
+		return;
+	var ele = $('<li><p>' + aboutTtext + '</p></li>');
+	$('#mabout-me').append(ele);
+	var close = $('<a href="#" >close</a>');
+	ele.append(close);
+	close.click(function(e) {
+		e.preventDefault();
+		$(this).parent().remove();
+	});
+	$("#mabout-me").animate({ 
+        scrollTop: ele.offset().top 
+    }, 1000);
+    $('#about-text').val('');
+};
+
+var submitAbout = function(e) {
+	if($("#mabout-me").children().length == 0)
+		return;
+	var aboutMe = [];
+	$.each($("#mabout-me").children(), function(k, ele){
+		aboutMe.push($(ele).find('p').text());
+	});
+	$(this)
+	.html($getSpinner())
+	.off('click');
+	$.ajax({
+		url: getApiUrl() + '/sgk/saveabout',
+		type: 'post',
+		data: {aboutMe: aboutMe},
+		dataType: 'json',
+		success: function(resp){
+			const {code, message} = resp;
+			$(e.currentTarget).html('Login').click(submitAbout);
+			if(code == 'SGK_001'){
+				malert(message);
+			}else{
+				malert(message, true);
+			}
+		}
+	});
+};
+
 $(document).ready(function(){
 	$('#login-btn').off('click').click(submitLogin);
 	$('#logout-btn').off('click').click(logOut);
 	$('#download-btn').click(downloadFile);
 	$('#upload-btn').click(uploadFile);
+	$('#append-about').click(appendAbout);
+	$('#submit-about').click(submitAbout);
+	$("#mabout-me").children().find('a').click(function(e) {
+		e.preventDefault();
+		$(this).parent().remove();
+	});
 });

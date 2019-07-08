@@ -141,18 +141,19 @@
                     <div class="section-title"><span></span><h2>About Me</h2></div>
                     <div>    
                         <ul class="mabout-me">       
-                            <li>
-                                <p class="top_30">
-                                 Self-motivated Web Development professional having efficient and effective skills.</p>
-                                <!--  <p>Self-motivated Web Development professional with 1 years of experience
-                    looking for back-end service development.</p> -->
-                            </li>
-                            <li>
-                                <p>As I'm a developer, i had been learning which things are updated in technical knowledge.</p>
-                            </li>
-                            <li>
-                                <p>Always looking for back-end service development.</p>
-                            </li>
+                            <%
+                            if(sgk.aboutMe){
+                                if(sgk.aboutMe.length > 0){
+                                    sgk.aboutMe.forEach((dt,ind) => {
+                            %>
+                                <li>
+                                    <p><%=dt;%></p>
+                                </li>
+
+                            <%
+                                    })                      
+                                }
+                            }%>
                         </ul>
                     </div>
                 </section>

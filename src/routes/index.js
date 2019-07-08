@@ -62,7 +62,18 @@ function Routes(app){
 	self.db = require('../config').db;
 	Admin = new Admin();
 	app.get('/', function(req, res){
-		res.render('index', {});
+		
+		self.db.get('settings', {}, settings => {
+			var sgk = {};
+			if(settings.length > 0){
+				sgk = settings[0];
+				delete sgk.password;
+				delete sgk.smtp_user;
+				delete sgk.smtp_password;
+				delete sgk.accessToken;
+			}
+			res.render('index', {sgk: sgk});
+		});
 	});
 
 	app.post('/contactme', function(req, res) {
@@ -131,6 +142,8 @@ function Routes(app){
 	app.get('/sgk/logout', Admin.auth(), Admin.logOut);
 
 	app.get('/sgk/getfile', Admin.auth(), Admin.getFile);
+
+	app.post('/sgk/saveabout', Admin.auth(), Admin.saveAbout);
 
 	app.post('/sgk/uploadfile', Admin.auth(), uploadFile.single('file'), Admin.uploadFile);
 

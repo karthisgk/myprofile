@@ -4,8 +4,48 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Home</h6>
+        </div>
+        <div class="card-body">
+
+        	<div class="col-sm-5">
+
+        		<ul id="mabout-me" class="scrolable-content">       
+                    <%
+                    if(admin.aboutMe){
+                    	if(admin.aboutMe.length > 0){
+							admin.aboutMe.forEach((dt,ind) => {
+					%>
+						<li>
+	                    	<p><%=dt;%></p>
+	                    	<a href="#" >close</a>
+	                    </li>
+
+					<%
+							})                  	
+                    	}
+                    }%>
+                </ul>
+
+                <div class="form-group">
+                	<input type="text" class="form-control" id="about-text" placeholder="About me" />
+                </div>
+
+                <div class="malert merror">
+                    <span>!</span>
+                    <p class="mclose">x</p>
+                </div>
+
+                <div class="form-group">
+                	<button type="button" id="append-about" class="btn btn-primary">Append</button> /
+                	<button type="button" id="submit-about" class="btn btn-success">Save Changes</button>
+                </div>
+
+        	</div>
+        </div>	
+    </div>
 
 </div>
 <!-- /.container-fluid -->
