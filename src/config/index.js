@@ -22,7 +22,7 @@ var main = {
 	    }
 	},
 	session_time: 999999999999,
-	liveUrl: 'http://localhost:5000/',
+	liveUrl: 'http://me.karthisgk.be/',
 	initApp: function(dir){
 		main.app_dir = dir;
 		return main;
