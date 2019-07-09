@@ -7,22 +7,24 @@
         <div class="card-header py-3">
           <h6 class="m-0 font-weight-bold text-primary">Editor</h6>
         </div>
-        <div class="card-body">
+        <div class="card-body row editor">
 
-        	<div class="col-xs-12 col-sm-5">
+        	<div class="col-sm-12">
 
         		<div class="form-group">
 
-                    <textarea class="form-control" id="edit-content"><%=styles;%></textarea>
+                    <h3>HTML Editor</h3>
+                    <article id="edit-content"><%=styles;%></article>
 
                 </div>
 
         	</div>
 
-            <div class="col-xs-12 col-sm-5">
+            <div class="col-sm-12">
 
                 <div class="form-group">
-                    <textarea class="form-control" id="edit-styles"><%=content;%></textarea>
+                <h3>CSS Editor</h3>
+                    <article id="edit-styles"><%=content;%></article>
                 </div>
 
             </div>
@@ -35,4 +37,43 @@
 
 </div>
 <!-- /.container-fluid -->
-<% include footer %>  
+<% include footer %> 
+<% include codemirror %>  
+
+<script type="text/javascript">
+var htmlEditor, cssEditor;
+$(document).ready(function(){
+
+    htmlEditor = CodeMirror(document.getElementById('edit-content'), {
+        value: '',
+        lineNumbers: true,
+        mode: "text/html",
+        keyMap: "sublime",
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        tabSize: 2,
+        styleActiveLine: true,
+        autoCloseTags: true,
+        lineWrapping: true,
+        extraKeys: {"Ctrl-Space": "autocomplete"}
+    });
+
+    cssEditor = CodeMirror(document.getElementById('edit-styles'), {
+        value: '',
+        lineNumbers: true,
+        mode: "text/css",
+        keyMap: "sublime",
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        tabSize: 2,
+        styleActiveLine: true,
+        autoCloseTags: true,
+        lineWrapping: true,
+        extraKeys: {"Ctrl-Space": "autocomplete"}
+    });
+});
+</script>
