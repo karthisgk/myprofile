@@ -212,7 +212,10 @@ Admin.prototype.editor = function(req, res) {
 	var data = {
 		title: req.accessUser.title,
 		styles: '',
-		content: ''
+		content: '',
+		accessToken: req.accessToken,
+		liveUrl: config.liveUrl,
+		admin: req.accessUser
 	};
 	
 	if(req.accessUser.editor){
