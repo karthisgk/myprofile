@@ -202,6 +202,42 @@ Admin.prototype.uploadFile = function(req, res) {
    	}
 };
 
+Admin.prototype.editor = function(req, res) {
+	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
+		res.redirect('/sgk/login');
+		return;
+	}
+
+
+	var data = {
+		title: req.accessUser.title,
+		styles: typeof req.accessUser.editor.styles != 'undefined' ? req.accessUser.editor.styles : '',
+		content: typeof req.accessUser.editor.content != 'undefined' ? req.accessUser.editor.content : ''
+	};
+
+	res.render('admin/editor', data);
+};
+
+Admin.prototype.saveEditor = function(req, res){
+	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
+		res.redirect('/sgk/login');
+		return;
+	}
+
+	if(!req.body.styles || !req.body.content){
+		res.json(common.getResponses('002', {}));
+		return;
+	}
+
+	var dt = {
+		styles: req.body.styles,
+		content: req.body.content
+	};
+	config.db.update('settings', {}, {editor: dt}, (err, result) => {
+		res.json(common.getResponses('001', {}));
+	});
+};
+
 /*config.db.insert('settings', {
 	"title" : "karthisgk", "smtp_password" : "vijisgk97", "smtp_user" : "karthisg.sg@gmail.com", "userName" : "karthisgk",
 	password: common.getPasswordHash('vijisgk97')
