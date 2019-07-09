@@ -146,6 +146,9 @@ function Routes(app){
 	app.post('/sgk/saveabout', Admin.auth(), Admin.saveAbout);
 
 	app.post('/sgk/uploadfile', Admin.auth(), uploadFile.single('file'), Admin.uploadFile);
+	
+	app.get('/sgk/editor', Admin.auth(), Admin.editor);
+	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
 
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'profileimage" method="post" enctype="multipart/form-data">\
