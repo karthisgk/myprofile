@@ -1,0 +1,42 @@
+<% include header %>   
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Editor</h6>
+        </div>
+        <div class="card-body">
+
+        	<div class="col-xs-12 col-sm-5">
+
+        		<div class="form-group">
+
+                    <textarea class="form-control" id="edit-content">
+                        <%=styles;%>                      
+                    </textarea>
+
+                </div>
+
+        	</div>
+
+            <div class="col-xs-12 col-sm-5">
+
+                <div class="form-group">
+                    <textarea class="form-control" id="edit-styles">
+                        <%=content;%>                      
+                    </textarea>
+                </div>
+
+            </div>
+
+
+
+
+        </div>	
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+<% include footer %>  
