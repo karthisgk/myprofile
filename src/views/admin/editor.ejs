@@ -5,16 +5,17 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Editor</h6>
+          <h3 class="m-0 font-weight-bold text-primary float-left">Editor</h3>
+          <a href="#" class="btn btn-success float-right" id="editor-save" >Save</a>
         </div>
-        <div class="card-body row editor">
+        <div class="card-body row editor scrolable-content">
 
         	<div class="col-sm-12">
 
         		<div class="form-group">
 
-                    <h3>HTML Editor</h3>
-                    <article id="edit-content"><%=styles;%></article>
+                    <h6>HTML Editor</h6>
+                    <article id="edit-content"></article>
 
                 </div>
 
@@ -23,18 +24,20 @@
             <div class="col-sm-12">
 
                 <div class="form-group">
-                <h3>CSS Editor</h3>
-                    <article id="edit-styles"><%=content;%></article>
+                <h6>CSS Editor</h6>
+                    <article id="edit-styles"></article>
                 </div>
 
             </div>
 
-
-
-
         </div>	
     </div>
 
+</div>
+
+<div style="display: none;">
+    <textarea id="data-styles"><%=styles;%></textarea>
+    <textarea id="data-content"><%=content;%></textarea>
 </div>
 <!-- /.container-fluid -->
 <% include footer %> 
@@ -45,7 +48,7 @@ var htmlEditor, cssEditor;
 $(document).ready(function(){
 
     htmlEditor = CodeMirror(document.getElementById('edit-content'), {
-        value: '',
+        value: $('#data-content').val(),
         lineNumbers: true,
         mode: "text/html",
         keyMap: "sublime",
@@ -53,7 +56,7 @@ $(document).ready(function(){
         matchBrackets: true,
         showCursorWhenSelecting: true,
         theme: "monokai",
-        tabSize: 2,
+        tabSize: 4,
         styleActiveLine: true,
         autoCloseTags: true,
         lineWrapping: true,
@@ -61,7 +64,7 @@ $(document).ready(function(){
     });
 
     cssEditor = CodeMirror(document.getElementById('edit-styles'), {
-        value: '',
+        value: $('#data-styles').val(),
         lineNumbers: true,
         mode: "text/css",
         keyMap: "sublime",

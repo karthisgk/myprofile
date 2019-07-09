@@ -73,7 +73,3 @@ margin: 0 0px;
 #mabout-me > li > p {
 	margin-bottom: 0;
 }
-
-.card-body.editor .CodeMirror {
-	height: 500px;
-}

@@ -146,6 +146,27 @@ var submitAbout = function(e) {
 	});
 };
 
+var saveEditor = function(e) {
+	$(this)
+	.html($getSpinner())
+	.off('click');
+	$.ajax({
+		url: getApiUrl() + '/sgk/editor',
+		type: 'post',
+		data: {styles: cssEditor.getValue(), content: htmlEditor.getValue()},
+		dataType: 'json',
+		success: function(resp){
+			const {code, message} = resp;
+			$(e.currentTarget).html('Save').click(saveEditor);
+			if(code == 'SGK_001'){
+				malert(message);
+			}else{
+				malert(message, true);
+			}
+		}
+	});
+};
+
 $(document).ready(function(){
 	$('#login-btn').off('click').click(submitLogin);
 	$('#logout-btn').off('click').click(logOut);
@@ -157,4 +178,5 @@ $(document).ready(function(){
 		e.preventDefault();
 		$(this).parent().remove();
 	});
+	$('#editor-save').click(saveEditor);
 });
