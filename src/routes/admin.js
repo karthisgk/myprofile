@@ -215,7 +215,7 @@ Admin.prototype.editor = function(req, res) {
 		content: typeof req.accessUser.editor.content != 'undefined' ? req.accessUser.editor.content : ''
 	};
 
-	res.render('admin/editor', data);
+	res.render('admin/editor', {styles: 'dsdsdsd'});
 };
 
 Admin.prototype.saveEditor = function(req, res){
