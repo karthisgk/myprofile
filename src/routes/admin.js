@@ -211,11 +211,19 @@ Admin.prototype.editor = function(req, res) {
 
 	var data = {
 		title: req.accessUser.title,
-		styles: typeof req.accessUser.editor.styles != 'undefined' ? req.accessUser.editor.styles : '',
-		content: typeof req.accessUser.editor.content != 'undefined' ? req.accessUser.editor.content : ''
+		styles: '',
+		content: ''
 	};
+	
+	if(req.accessUser.editor){
+		if(req.accessUser.editor.styles)
+			data.styles = req.accessUser.editor.styles;
+		
+		if(req.accessUser.editor.content)
+			data.content = req.accessUser.editor.content;
+	}
 
-	res.render('admin/editor', {styles: 'dsdsdsd'});
+	res.render('admin/editor', data);
 };
 
 Admin.prototype.saveEditor = function(req, res){
