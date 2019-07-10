@@ -149,6 +149,45 @@ function Routes(app){
 	
 	app.get('/sgk/editor', Admin.auth(), Admin.editor);
 	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
+	
+	app.post('/edited', function(req, res) {
+		self.db.get('setting', {}, settings => {
+			if(settings.length > 0){
+				settings = settings[0];
+				var data = {
+					title: settings.title,
+					styles: '',
+					content: ''
+				};
+				if(settings.editor){
+					if(settings.editor.styles)
+						data.styles = settings.editor.styles;
+
+					if(settings.editor.content)
+						data.content = settings.editor.content;
+				}
+				readFile(data);
+			}else
+				res.send('404 error');
+		});
+		function readFile(data) {
+			fs.readFile(__dirname + '/../public/edited/index.html' , 'utf8', (err, html) => {
+				if(err)
+					cb({result: 'error', err: err});
+				else{
+					var keys = [];
+					for(var k in data)
+						keys.push(k);
+					if(keys.length > 0) {
+						keys.forEach((dataKey, ind) => {
+							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
+						});
+					}
+					res.send(html);
+				}
+			});
+		}
+	});
 
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'profileimage" method="post" enctype="multipart/form-data">\
