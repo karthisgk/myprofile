@@ -150,7 +150,7 @@ function Routes(app){
 	app.get('/sgk/editor', Admin.auth(), Admin.editor);
 	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
 	
-	app.post('/resume', function(req, res) {
+	app.get('/resume', function(req, res) {
 		self.db.get('settings', {}, settings => {
 			if(settings.length > 0){
 				settings = settings[0];
