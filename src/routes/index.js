@@ -150,7 +150,7 @@ function Routes(app){
 	app.get('/sgk/editor', Admin.auth(), Admin.editor);
 	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
 	
-	app.post('/edited', function(req, res) {
+	app.post('/resume', function(req, res) {
 		self.db.get('settings', {}, settings => {
 			if(settings.length > 0){
 				settings = settings[0];
@@ -170,6 +170,24 @@ function Routes(app){
 			}else
 				res.send('404 error');
 		});
+		function readFile(data) {
+			fs.readFile(__dirname + '/../public/edited/index.html' , 'utf8', (err, html) => {
+				if(err)
+		 			res.send('404 error');
+				else{
+					var keys = [];
+					for(var k in data)
+						keys.push(k);
+					if(keys.length > 0) {
+						keys.forEach((dataKey, ind) => {
+							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
+						});
+					}
+					console.log(html);
+					res.send(html);
+				}
+			});
+		};
 	});
 
 	app.get('/profileimage', function(req, res){
