@@ -183,6 +183,7 @@ function Routes(app){
 							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
 						});
 					}
+					console.log(html);
 					res.send(html);
 				}
 			});
