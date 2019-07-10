@@ -170,24 +170,6 @@ function Routes(app){
 			}else
 				res.send('404 error');
 		});
-		function readFile(data) {
-			fs.readFile(__dirname + '/../public/edited/index.html' , 'utf8', (err, html) => {
-				if(err)
-					cb({result: 'error', err: err});
-				else{
-					var keys = [];
-					for(var k in data)
-						keys.push(k);
-					if(keys.length > 0) {
-						keys.forEach((dataKey, ind) => {
-							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
-						});
-					}
-					console.log(html);
-					res.send(html);
-				}
-			});
-		}
 	});
 
 	app.get('/profileimage', function(req, res){
