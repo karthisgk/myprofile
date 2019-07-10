@@ -151,7 +151,7 @@ function Routes(app){
 	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
 	
 	app.post('/edited', function(req, res) {
-		self.db.get('setting', {}, settings => {
+		self.db.get('settings', {}, settings => {
 			if(settings.length > 0){
 				settings = settings[0];
 				var data = {
