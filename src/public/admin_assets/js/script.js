@@ -178,5 +178,5 @@ $(document).ready(function(){
 		e.preventDefault();
 		$(this).parent().remove();
 	});
-	$('#editor-save').click(saveEditor);
+	$('.editor-save').click(saveEditor);
 });
