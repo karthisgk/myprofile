@@ -249,6 +249,47 @@ Admin.prototype.saveEditor = function(req, res){
 	});
 };
 
+Admin.prototype.getResume = function(cb){
+ 	return function(req, res) {
+		config.db.get('settings', {}, settings => {
+			if(settings.length > 0){
+				settings = settings[0];
+				var data = {
+					title: settings.title,
+					styles: '',
+					content: ''
+				};
+				if(settings.editor){
+					if(settings.editor.styles)
+						data.styles = settings.editor.styles;
+
+					if(settings.editor.content)
+						data.content = settings.editor.content;
+				}
+				readFile(data);
+			}else
+				res.send('404 error');
+		});
+		function readFile(data) {
+			fs.readFile(__dirname + '/../public/edited/index.html' , 'utf8', (err, html) => {
+				if(err)
+		 			res.send('404 error');
+				else{
+					var keys = [];
+					for(var k in data)
+						keys.push(k);
+					if(keys.length > 0) {
+						keys.forEach((dataKey, ind) => {
+							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
+						});
+					}
+					cb(res, html);
+				}
+			});
+		};
+	}
+};
+
 /*config.db.insert('settings', {
 	"title" : "karthisgk", "smtp_password" : "vijisgk97", "smtp_user" : "karthisg.sg@gmail.com", "userName" : "karthisgk",
 	password: common.getPasswordHash('vijisgk97')

@@ -7,6 +7,7 @@ const fs = require('fs');
 var request = require('request');
 var SMTP = require('../config/SMTPmailConfig.js');
 var Admin = require('./admin.js');
+var pdf = require('html-pdf');
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -150,45 +151,22 @@ function Routes(app){
 	app.get('/sgk/editor', Admin.auth(), Admin.editor);
 	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
 	
-	app.get('/resume', function(req, res) {
-		self.db.get('settings', {}, settings => {
-			if(settings.length > 0){
-				settings = settings[0];
-				var data = {
-					title: settings.title,
-					styles: '',
-					content: ''
-				};
-				if(settings.editor){
-					if(settings.editor.styles)
-						data.styles = settings.editor.styles;
+	app.get('/resume', Admin.getResume((res, html) => {
+		res.send(html);
+	}));
 
-					if(settings.editor.content)
-						data.content = settings.editor.content;
-				}
-				readFile(data);
-			}else
-				res.send('404 error');
+	app.get('/edited/karthik_resume.pdf', Admin.getResume((res, html) => {
+		var saveFile = './src/public/' + 'karthik_resume.pdf';
+		if (fs.existsSync(saveFile))
+				fs.unlinkSync(saveFile);
+		pdf.create(html, { format: 'Letter' }).toFile(saveFile, function(err, result) {
+		  	if (err) return console.log(err);
+		  	if (fs.existsSync(saveFile))
+				res.sendFile(path.resolve(saveFile));
+			else
+				res.status(404).send('404 Error');
 		});
-		function readFile(data) {
-			fs.readFile(__dirname + '/../public/edited/index.html' , 'utf8', (err, html) => {
-				if(err)
-		 			res.send('404 error');
-				else{
-					var keys = [];
-					for(var k in data)
-						keys.push(k);
-					if(keys.length > 0) {
-						keys.forEach((dataKey, ind) => {
-							html = html.replace(new RegExp('{{' + dataKey + '}}', 'g'), data[dataKey]);
-						});
-					}
-					console.log(html);
-					res.send(html);
-				}
-			});
-		};
-	});
+	}));
 
 	app.get('/profileimage', function(req, res){
 		var html = '<form action="'+baseurl+'profileimage" method="post" enctype="multipart/form-data">\
