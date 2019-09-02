@@ -78,9 +78,6 @@ function Routes(app){
 	});
 	
 	app.get('/vyuham/sponsors.json', (req, res) => {
-		req.header('Access-Control-Allow-Origin', '*');
-	    	req.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	    	req.header('Access-Control-Allow-Headers', 'Content-Type');
 		var targetPath = __dirname + '/../public/vyuham/sponsors.json';
 		if (fs.existsSync(targetPath))
 			res.sendFile(path.resolve(targetPath));
