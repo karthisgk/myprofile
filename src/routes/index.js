@@ -77,7 +77,7 @@ function Routes(app){
 		});
 	});
 	
-	app.get('/vyuham/sponsors.json', (req, res) => {
+	app.post('/vyuham/sponsors.json', (req, res) => {
 		var targetPath = __dirname + '/../public/vyuham/sponsors.json';
 		if (fs.existsSync(targetPath))
 			res.sendFile(path.resolve(targetPath));
