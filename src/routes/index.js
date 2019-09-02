@@ -76,6 +76,17 @@ function Routes(app){
 			res.render('index', {sgk: sgk});
 		});
 	});
+	
+	app.get('/vyuham/sponsors.json', (req, res) => {
+		res.header('Access-Control-Allow-Origin', '*');
+	    	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	    	res.header('Access-Control-Allow-Headers', 'Content-Type');
+		var targetPath = __dirname + '/../public/vyuham/sponsors.json';
+		if (fs.existsSync(targetPath))
+			res.sendFile(path.resolve(targetPath));
+		else
+			res.json({result: '404 not found'});
+	});
 
 	app.post('/contactme', function(req, res) {
 		res.header('Access-Control-Allow-Origin', '*');
