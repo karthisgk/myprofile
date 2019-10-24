@@ -158,12 +158,12 @@ function Routes(app){
 	      	.toString(16)
 	      	.substring(1);
 	  	};
-
+	  	const otp = s4();
 	    var onSendMail = function(smtp){
 		    var adminMail = appConfig.smtp_config.auth.user;
 		    var content = '';
 			content += '<h1>Hi, ' + req.body.emailAddress.split('@')[0] + '</h1>'; 
-			content += '<p> your otp: </p><br><p>' + s4() + '</p>';
+			content += '<p> your otp: </p><br><p>' + otp + '</p>';
 		    smtp.getFile({title: 'contact-form', content: content}, (d) => {
 				var mail = {
 				    from: adminMail,
@@ -188,7 +188,7 @@ function Routes(app){
 			}
 		});
 
-		res.json({code: '020', message: 'success'});
+		res.json({code: '020', message: 'success', otp: otp});
 	});
 
 	app.get('/image/:img', function(req, res){
