@@ -143,6 +143,54 @@ function Routes(app){
 		res.json({code: 'sgk_512', message: 'Contact details are submitted'});
 	});
 
+	app.post('/localchat/verify', (req, res) => {
+		res.header('Access-Control-Allow-Origin', '*');
+	    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+	    if(!req.body.emailAddress){
+	    	res.json({code: '003', message: 'Wrong Input'});
+	    	return;
+	    }
+
+	    const s4 = () => {
+	    	return Math.floor((1 + Math.random()) * 0x10000)
+	      	.toString(16)
+	      	.substring(1);
+	  	};
+
+	    var onSendMail = function(smtp){
+		    var adminMail = appConfig.smtp_config.auth.user;
+		    var content = '';
+			content += '<h1>Hi, ' + req.body.emailAddress.split('@')[0] + '</h1>'; 
+			content += '<p> your otp: </p><br><p>' + s4() + '</p>';
+		    smtp.getFile({title: 'contact-form', content: content}, (d) => {
+				var mail = {
+				    from: adminMail,
+				    to: req.body.emailAddress,
+				    subject: 'Verification!' ,
+				    html: d.html
+				};
+				smtp.sendMail(mail, (err, res) => {
+					if (err) {console.log(err);}
+					
+				});
+			});
+		};
+
+		self.db.get('settings', {}, (data) => {
+			if(data.length > 0){
+				data = data[0];
+				var cfg = appConfig.smtp_config;
+				cfg.auth.user = data.smtp_user2 ? data.smtp_user2 : data.smtp_user;
+				cfg.auth.pass = data.smtp_password;
+				onSendMail(new SMTP(cfg));
+			}
+		});
+
+		res.json({code: '020', message: 'success'});
+	});
+
 	app.get('/image/:img', function(req, res){
 
 		if(!req.params.hasOwnProperty('img')){
