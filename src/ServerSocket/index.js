@@ -7,6 +7,10 @@ function ServerSocket(io){
 		socket.on('chat', function(data){
 			io.sockets.emit('chat', data);
 		});
+
+		socket.on('state', function(data){
+			io.sockets.emit('state', data);
+		});
 	}
 }
 
