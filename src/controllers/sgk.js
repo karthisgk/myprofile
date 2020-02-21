@@ -39,7 +39,7 @@ Admin.prototype.loginView = function(req, res) {
 
 Admin.prototype.auth = function(){
 	return function(req, res, next){
-		req.session.accessToken = 'sgk97sgk';
+		//req.session.accessToken = 'sgk97sgk';
 		if(req.session.hasOwnProperty("accessToken")){
 
 			if(req.session.accessToken == ''){
