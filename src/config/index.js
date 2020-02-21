@@ -5,11 +5,11 @@ var SMTP = require('./SMTPmailConfig.js');
 var main = {
 	development: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 5000
+		port: process.env.PORT || 7070
 	},
 	production: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 5000
+		port: process.env.PORT || 7070
 	},
 	db: new DB(),
 	smtp_config: {
@@ -22,7 +22,8 @@ var main = {
 	    }
 	},
 	session_time: 999999999999,
-	liveUrl: 'http://me.karthisgk.be/',
+	liveUrl: true ? 'http://me.karthisgk.be/' : 'http://localhost:7070/',
+	frontEndUrl: 'http://localhost:8080/',
 	initApp: function(dir){
 		main.app_dir = dir;
 		return main;
@@ -35,6 +36,17 @@ var main = {
 			else
 				smtp = new SMTP(main.smtp_config);
 			cb(smtp);
+		});
+	},
+	getSettings: (req, res, next) => {
+		new DB().get('settings', {}, settings => {
+			if(settings.length) {
+				req.generalSettings = settings[0];
+				next();
+			} else {
+				res.status(400);
+				res.send('None shall pass');
+			}
 		});
 	}
 };

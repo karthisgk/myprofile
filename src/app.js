@@ -2,11 +2,12 @@
 var socket  = require( 'socket.io' );
 var express = require('express');
 var session = require('express-session');
-var Routes = require('./routes');
 var ServerSocket = require('./ServerSocket');
 var appConfig = require('./config').initApp(__dirname);
 var config = appConfig[process.env.NODE_ENV || 'development'];
 var bodyParser = require('body-parser');
+const { dbName, dbUrl } = require('./js/const');
+const mongoose = require('mongoose');
 
 var app = express();
 app.use(express.json());
@@ -40,15 +41,20 @@ app.use(function(req, res, next){
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
-
-var router = new Routes(express.Router());
-app.use(router.r);
+const baseRoutes = require('./routes');
+const sgkRoutes = require('./routes/sgk');
+app.use(baseRoutes);
+app.use('/sgk', sgkRoutes);
 
 var server  = require('http').createServer(app);
 var io = socket.listen(server);
 var sv = new ServerSocket(io);
 
-server.listen(config.port, '0.0.0.0');
-console.log("server listening at "+config.port);
-
-
+async function startApp() { 
+	await mongoose.connect( dbUrl + "/" + dbName, { 
+		useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true
+	});
+	server.listen(config.port, '0.0.0.0');
+	console.log("server listening at "+config.port);
+}
+startApp();

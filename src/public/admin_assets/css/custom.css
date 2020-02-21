@@ -73,3 +73,28 @@ margin: 0 0px;
 #mabout-me > li > p {
 	margin-bottom: 0;
 }
+
+.myProgress {
+    width: 100%;
+    background-color: #ddd;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+  
+.myProgress > div {
+    border-radius: 10px;
+    width: 0%;
+    height: 30px;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+}
+
+.myProgress.hide {
+	display: none;
+}
+
+.myProgress.show {
+	display: block;
+}
