@@ -1,13 +1,15 @@
 var appConfig = require('../config').initApp(__dirname);
-var config = appConfig[process.env.NODE_ENV || 'development'];
-var common = require('../public/common.js');
+var config = require('../config');
+const { getSettings } = config;
+var common = require('../js/common.js');
 var multer  = require('multer');
 var path = require('path');
 const fs = require('fs');
-var request = require('request');
 var SMTP = require('../config/SMTPmailConfig.js');
-var Admin = require('./admin.js');
+var sgkController = new (require('../controllers/sgk.js'));
 var pdf = require('html-pdf');
+const express = require('express');
+const app = express.Router();
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -58,215 +60,137 @@ String.prototype.isEmail = function(){
   return pattern.test(this);
 };
 
-function Routes(app){
-	var self = this;
-	self.db = require('../config').db;
-	Admin = new Admin();
-	app.get('/', function(req, res){
-		
-		self.db.get('settings', {}, settings => {
-			var sgk = {};
-			if(settings.length > 0){
-				sgk = settings[0];
-				delete sgk.password;
-				delete sgk.smtp_user;
-				delete sgk.smtp_password;
-				delete sgk.accessToken;
-			}
-			res.render('index', {sgk: sgk});
-		});
-	});
-	
-	app.post('/vyuham/sponsors.json', (req, res) => {
-		res.header('Access-Control-Allow-Origin', '*');
-	    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	    res.header('Access-Control-Allow-Headers', 'Content-Type');
-		var targetPath = __dirname + '/../public/vyuham/sponsors.json';
-		if (fs.existsSync(targetPath))
-			res.sendFile(path.resolve(targetPath));
-		else
-			res.json({result: '404 not found'});
-	});
-	
-	app.get('/vyuham/lib/font-awesome/fonts/:file', (req, res) => {
-		res.header('Access-Control-Allow-Origin', '*');
-	    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	    res.header('Access-Control-Allow-Headers', 'Content-Type');
-		var targetPath = __dirname + '/../public/vyuham/lib/font-awesome/fonts/' + req.params.file;
-		if (fs.existsSync(targetPath))
-			res.sendFile(path.resolve(targetPath));
-		else
-			res.json({result: '404 not found'});
-	});
+app.get('/', getSettings, (req, res) => {
+	var sgk = req.generalSettings;
+	delete sgk.password;
+	delete sgk.smtp_user;
+	delete sgk.smtp_password;
+	delete sgk.accessToken;
+	res.render('index', {sgk: sgk});
+});
 
-	app.post('/contactme', function(req, res) {
-		res.header('Access-Control-Allow-Origin', '*');
-	    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	    res.header('Access-Control-Allow-Headers', 'Content-Type');
+app.post('/contactme', getSettings, function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
 
-	    if(!req.body.name ||
-	    	!req.body.emailAddress ||
-	    	!req.body.message){
-	    	res.json({code: 'sgk_003', message: 'Wrong Input'});
-	    	return;
-	    }
+	if(!req.body.name ||
+		!req.body.emailAddress ||
+		!req.body.message){
+		res.json({code: 'sgk_003', message: 'Wrong Input'});
+		return;
+	}
 
 
-		var onSendMail = function(smtp){
-		    var adminMail = appConfig.smtp_config.auth.user;
-		    var content = '<h3>'+ req.body.name +'</h3>';
-			content += '<h4>' + req.body.emailAddress + '</h4>'; 
-			content += '<p>' + req.body.message + '</p>';
-		    smtp.getFile({title: 'contact-form', content: content}, (d) => {
-				var mail = {
-				    from: adminMail,
-				    to: 'karthisg.sg2@gmail.com',
-				    subject: 'contact-form - karthisgk.be' ,
-				    html: d.html
-				};
-				smtp.sendMail(mail, (err, res) => {
-					if (err) {console.log(err);}
-					
-				});
+	var onSendMail = function(smtp){
+		var adminMail = appConfig.smtp_config.auth.user;
+		var content = '<h3>'+ req.body.name +'</h3>';
+		content += '<h4>' + req.body.emailAddress + '</h4>'; 
+		content += '<p>' + req.body.message + '</p>';
+		smtp.getFile({title: 'contact-form', content: content}, (d) => {
+			var mail = {
+				from: adminMail,
+				to: 'karthisg.sg2@gmail.com',
+				subject: 'contact-form - karthisgk.be' ,
+				html: d.html
+			};
+			smtp.sendMail(mail, (err, res) => {
+				if (err) {console.log(err);}
+				
 			});
-		};
-		self.db.get('settings', {}, (data) => {
-			if(data.length > 0){
-				data = data[0];
-				var cfg = appConfig.smtp_config;
-				cfg.auth.user = data.smtp_user;
-				cfg.auth.pass = data.smtp_password;
-				onSendMail(new SMTP(cfg));
-			}
 		});
-
-		res.json({code: 'sgk_512', message: 'Contact details are submitted'});
-	});
-
-	app.post('/localchat/verify', (req, res) => {
-		res.header('Access-Control-Allow-Origin', '*');
-	    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	    res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-	    if(!req.body.emailAddress){
-	    	res.json({code: '003', message: 'Wrong Input'});
-	    	return;
-	    }
-
-	    const s4 = () => {
-	    	return Math.floor((1 + Math.random()) * 0x10000)
-	      	.toString(16)
-	      	.substring(1);
-	  	};
-	  	const otp = s4();
-	    var onSendMail = function(smtp){
-		    var adminMail = appConfig.smtp_config.auth.user;
-		    var content = '';
-			content += '<h1>Hi, ' + req.body.emailAddress.split('@')[0] + '</h1>'; 
-			content += '<p> your otp: </p><br><p>' + otp + '</p>';
-		    smtp.getFile({title: 'contact-form', content: content}, (d) => {
-				var mail = {
-				    from: adminMail,
-				    to: req.body.emailAddress,
-				    subject: 'Verification!' ,
-				    html: d.html
-				};
-				smtp.sendMail(mail, (err, res) => {
-					if (err) {console.log(err);}
-					
-				});
-			});
-		};
-
-		self.db.get('settings', {}, (data) => {
-			if(data.length > 0){
-				data = data[0];
-				var cfg = appConfig.smtp_config;
-				cfg.auth.user = data.smtp_user2 ? data.smtp_user2 : data.smtp_user;
-				cfg.auth.pass = data.smtp_password;
-				onSendMail(new SMTP(cfg));
-			}
-		});
-
-		res.json({code: '020', message: 'success', otp: otp});
-	});
-
-	app.get('/image/:img', function(req, res){
-
-		if(!req.params.hasOwnProperty('img')){
-			res.send('404 Error');
-			return;
+	};
+	const proceed = function(data) {
+		if(data.length > 0){
+			data = data[0];
+			var cfg = appConfig.smtp_config;
+			cfg.auth.user = data.smtp_user;
+			cfg.auth.pass = data.smtp_password;
+			onSendMail(new SMTP(cfg));
 		}
-		var imgPath = __dirname + '/../uploads/images/' + req.params.img;
-		if (fs.existsSync(imgPath))
-			res.sendFile(path.resolve(imgPath));
+	}(req.generalSettings);
+
+	res.json({code: 'sgk_512', message: 'Contact details are submitted'});
+});
+
+app.post('/localchat/verify', (req, res) => {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+	if(!req.body.emailAddress){
+		res.json({code: '003', message: 'Wrong Input'});
+		return;
+	}
+
+	const s4 = () => {
+		return Math.floor((1 + Math.random()) * 0x10000)
+		.toString(16)
+		.substring(1);
+	};
+	const otp = s4();
+	var onSendMail = function(smtp){
+		var adminMail = appConfig.smtp_config.auth.user;
+		var content = '';
+		content += '<h1>Hi, ' + req.body.emailAddress.split('@')[0] + '</h1>'; 
+		content += '<p> your otp: </p><br><p>' + otp + '</p>';
+		smtp.getFile({title: 'contact-form', content: content}, (d) => {
+			var mail = {
+				from: adminMail,
+				to: req.body.emailAddress,
+				subject: 'Verification!' ,
+				html: d.html
+			};
+			smtp.sendMail(mail, (err, res) => {
+				if (err) {console.log(err);}
+				
+			});
+		});
+	};
+
+	config.db.get('settings', {}, (data) => {
+		if(data.length > 0){
+			data = data[0];
+			var cfg = appConfig.smtp_config;
+			cfg.auth.user = data.smtp_user2 ? data.smtp_user2 : data.smtp_user;
+			cfg.auth.pass = data.smtp_password;
+			onSendMail(new SMTP(cfg));
+		}
+	});
+
+	res.json({code: '020', message: 'success', otp: otp});
+});
+
+app.get('/storage/:dir/:img', function(req, res){
+
+	if(!req.params.hasOwnProperty('img')){
+		res.send('404 Error');
+		return;
+	}
+
+	var imgPath = __dirname + '/../uploads/' + req.params.dir + '/' + req.params.img;
+	if (fs.existsSync(imgPath))
+		res.sendFile(path.resolve(imgPath));
+	else
+		res.status(404).send('404 Error');
+});
+
+app.get('/resume', getSettings, sgkController.getResume((res, html) => {
+	res.send(html);
+}));
+
+app.get('/edited/karthik_resume.pdf', getSettings, sgkController.getResume((res, html) => {
+	var saveFile = './src/public/' + 'karthik_resume.pdf';
+	if (fs.existsSync(saveFile))
+			fs.unlinkSync(saveFile);
+	pdf.create(html, { format: 'Letter' }).toFile(saveFile, function(err, result) {
+		if (err) return console.log(err);
+		if (fs.existsSync(saveFile))
+			res.sendFile(path.resolve(saveFile));
 		else
 			res.status(404).send('404 Error');
 	});
-
-	app.get('/sgk', Admin.auth(), Admin.index);
-
-	app.get('/sgk/login', Admin.auth(), Admin.loginView);
-
-	app.post('/sgk/login', Admin.loginApi);
-
-	app.get('/sgk/logout', Admin.auth(), Admin.logOut);
-
-	app.get('/sgk/getfile', Admin.auth(), Admin.getFile);
-
-	app.post('/sgk/saveabout', Admin.auth(), Admin.saveAbout);
-
-	app.post('/sgk/uploadfile', Admin.auth(), uploadFile.single('file'), Admin.uploadFile);
-	
-	app.get('/sgk/editor', Admin.auth(), Admin.editor);
-	app.post('/sgk/editor', Admin.auth(), Admin.saveEditor);
-	
-	app.get('/resume', Admin.getResume((res, html) => {
-		res.send(html);
-	}));
-
-	app.get('/edited/karthik_resume.pdf', Admin.getResume((res, html) => {
-		var saveFile = './src/public/' + 'karthik_resume.pdf';
-		if (fs.existsSync(saveFile))
-				fs.unlinkSync(saveFile);
-		pdf.create(html, { format: 'Letter' }).toFile(saveFile, function(err, result) {
-		  	if (err) return console.log(err);
-		  	if (fs.existsSync(saveFile))
-				res.sendFile(path.resolve(saveFile));
-			else
-				res.status(404).send('404 Error');
-		});
-	}));
-
-	app.get('/profileimage', function(req, res){
-		var html = '<form action="'+baseurl+'profileimage" method="post" enctype="multipart/form-data">\
-		  <p><input type="file" name="prof">\
-		  <p><button type="submit">Submit</button>\
-		</form>';
-		res.send(html);
-	});
-
-	app.post('/profileimage', upload.single('prof'), function(req, res){
-		var file = req.file;				
-		var imageExt = path.extname(file.path);
-		imageFileName = 'sg' + imageExt;
-		imageTargetPath = './src/public/resume/images/' + imageFileName;
-		if (fs.existsSync(imageTargetPath))
-			fs.unlinkSync(imageTargetPath);
-		try {
-       		fs.renameSync(file.path, imageTargetPath);
-       		if (fs.existsSync(file.path))
-				fs.unlinkSync(file.path);
-       		res.redirect(baseurl + '/profileimage');
-       	} catch (err) {
-       		res.json(common.getResponses('003', {}));
-			return;
-       	}
-	});
-
-	self.r = app;
-}
-
+}));
 /*var fieds = { fieldname: 'photos',
   originalname: '7.JPG',
   encoding: '7bit',
@@ -276,4 +200,4 @@ function Routes(app){
   path: 'src/public/uploads/tmp/photos-1555156134847.JPG',
   size: 325768 }*/
 
-module.exports = Routes;
+module.exports = app;

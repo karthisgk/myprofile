@@ -38,7 +38,7 @@ var submitLogin = function(e){
 		success: function(resp){
 			const {code, data: {accessToken}, message} = resp;
 			$(e.currentTarget).html('Login').click(submitLogin);
-			if(code == 'SGK_001'){
+			if(code == 'SGK_020'){
 				malert(message);
 				location.reload();
 			}else{
@@ -90,16 +90,38 @@ var uploadFile = function(e) {
 		method: 'post',
 		path: '/sgk/uploadfile'	
 	}, fd);
-	xhr.onload = function(){
-		try {
-			var resp = JSON.parse(xhr.responseText);
-			const {code, message} = resp;
-			malert(message, code == 'SGK_001');
-		}catch(e){
-			malert('response error', true);
-		}
-	}
+	xhr.upload.onprogress = (evt) => {
+		var percentComplete = parseInt((evt.loaded / evt.total ) * 100);
+		toggleProgressBar(percentComplete);
+	};
+	xhr.upload.onloadstart = (evt) => {
+		toggleProgressBar(0);
+	};
+	xhr.upload.onloadend = (evt) => {
+		toggleProgressBar(100);
+	};
+	xhr.addEventListener("load",(evt) => {
+		const { code, message, data } = JSON.parse(xhr.responseText);
+		malert(message, code != 'SGK_001');
+	});
 };
+
+var toggleProgressBar = function(val, ele = '') {
+	if(!ele) {
+		ele = $('.myProgress');
+	}
+	if(ele.hasClass('show') && val == 0) {
+		ele.removeClass('show').addClass('hide');
+	} else {
+		ele.removeClass('hide').addClass('show');
+		ele.children().text(val);
+		ele.children().css('width', (val + '%'));
+	}
+	if (val >= 100) {
+		setTimeout(() => ele.removeClass('show').addClass('hide'), 2000);
+	}
+	return ele;
+}
 
 var appendAbout = function(e){
 	var aboutTtext = $('#about-text').val();
@@ -168,6 +190,7 @@ var saveEditor = function(e) {
 };
 
 $(document).ready(function(){
+	$('#login-form').submit(submitLogin);
 	$('#login-btn').off('click').click(submitLogin);
 	$('#logout-btn').off('click').click(logOut);
 	$('#download-btn').click(downloadFile);

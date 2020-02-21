@@ -1,8 +1,9 @@
-var common = require('../public/common.js');
-var ObjectId = require('mongodb').ObjectId;
+var common = require('../js/common.js');
+const util = require('../js/util');
 var config = require('../config/index.js');
 var path = require('path');
 const fs = require('fs');
+const userController = new (require('./user'));
 
 String.prototype.isNumeric = function(){
   return /^[0-9]+$/.test(this);
@@ -14,7 +15,6 @@ String.prototype.isEmail = function(){
 };
 
 function Admin() {
-	config.db = config.db;
 }
 
 Admin.prototype.index = function(req, res){
@@ -38,25 +38,24 @@ Admin.prototype.loginView = function(req, res) {
 };
 
 Admin.prototype.auth = function(){
-	var self = this;
 	return function(req, res, next){
-
-		if(req.session.hasOwnProperty('token')){
+		req.session.accessToken = 'sgk97sgk';
+		if(req.session.hasOwnProperty("accessToken")){
 
 			if(req.session.accessToken == ''){
 				next();
 				return;
 			}
 
-			var token = req.session.token;
-			self.isValidAccessToken(token, (isValid, user) => {
-				if(isValid){
+			var token = req.session.accessToken;
+			userController.auth(token, accessUser => {
+				if(accessUser) {
 					req.accessToken = token;
-					req.accessUser = user;
+					req.accessUser = accessUser;
 					next();
 				}
 				else
-					next();
+					res.json(util.getResponses('005', {}));
 			});
 
 		}else
@@ -64,73 +63,26 @@ Admin.prototype.auth = function(){
 	};
 };
 
-Admin.prototype.isValidAccessToken = function(token, cb){
-	config.db.get('settings', {accessToken: {$all: [token]}}, (data) => {
-		if(data.length > 0)
-		    cb(true, data[0]);
-		else
-			cb(false, data);
-	});
-};
-
 Admin.prototype.loginApi = function(req, res){
-	var self = this;
-	if(!req.body.userName ||
-		!req.body.password){
-		res.json(common.getResponses('002', {}));
-		return;
-	}
-
-	config.db.get('settings', {}, data => {
-		if(data.length > 0){
-			data = data[0];
-			if(data.userName == req.body.userName && 
-				common.validatePassword(data.password, req.body.password)){
-				var token = common.getCrptoToken(32);
-				var tokens = !data.hasOwnProperty('accessToken') || typeof data.accessToken.length == 'undefined'
-				|| typeof data.accessToken == 'string' ? [] : data.accessToken;
-				tokens.push(token);
-				req.session.token = token;
-				config.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
-					res.json(common.getResponses('001', {accessToken: token}));
-				});		
-			}else
-				res.json(common.getResponses('010', {}));
-		}else
-			res.json(common.getResponses('010', {}));
-	});
+	req.session.accessToken = req.newAccessToken;
+	res.json(util.getResponses('020', {accessToken: req.newAccessToken}));
 };
 
 Admin.prototype.logOut = function(req, res){
-	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
-		res.json(common.getResponses('011', {}));
-		return;
-	}
-
-	var data = req.accessUser;
-	var tokens = !data.hasOwnProperty('accessToken') || typeof data.accessToken.length == 'undefined'
-		|| typeof data.accessToken == 'string' ? [] : data.accessToken;
-	tokens.splice(tokens.indexOf(req.accessToken), 1);
-	config.db.update('settings', {}, {accessToken: tokens}, (err, result) => {
-		delete req.session.accessToken;
-		res.json(common.getResponses('001', {}));
-	});
+	delete req.session.accessToken;
+	res.json(util.getResponses('020', {}));
 };
 
 Admin.prototype.saveAbout = function(req, res) {
-	if(!req.hasOwnProperty('accessToken') || !req.hasOwnProperty('accessUser')){
-		res.json(common.getResponses('011', {}));
-		return;
-	}
 
 	if(!req.body.aboutMe){
 		res.json(common.getResponses('002', {}));
 		return;
 	}
 
-	config.db.update('settings', {}, {aboutMe: req.body.aboutMe}, (err, result) => {
-		res.json(common.getResponses('001', {}));
-	});
+	req.accessUser.aboutMe = req.body.aboutMe;
+	req.accessUser.save();
+	res.json(common.getResponses('001', {}));
 };
 
 Admin.prototype.getFile = function(req, res) {
@@ -244,27 +196,27 @@ Admin.prototype.saveEditor = function(req, res){
 		styles: req.body.styles,
 		content: req.body.content
 	};
-	config.db.update('settings', {}, {editor: dt}, (err, result) => {
-		res.json(common.getResponses('001', {}));
-	});
+	req.accessUser.editor = dt;
+	req.accessUser.save();
+	res.json(common.getResponses('001', {}));
 };
 
 Admin.prototype.getResume = function(cb){
  	return function(req, res) {
-		config.db.get('settings', {}, settings => {
-			if(settings.length > 0){
-				settings = settings[0];
+		userController.model.find({project: true}, (err, profiles) => {
+			if(profiles.length){
+				const profile = profiles[0];
 				var data = {
-					title: settings.title,
+					title: req.generalSettings.title,
 					styles: '',
 					content: ''
 				};
-				if(settings.editor){
-					if(settings.editor.styles)
-						data.styles = settings.editor.styles;
+				if(profile.editor){
+					if(profile.editor.styles)
+						data.styles = profile.editor.styles;
 
-					if(settings.editor.content)
-						data.content = settings.editor.content;
+					if(profile.editor.content)
+						data.content = profile.editor.content;
 				}
 				readFile(data);
 			}else
