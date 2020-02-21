@@ -48,7 +48,7 @@ var server  = require('http').createServer(app);
 var io = socket.listen(server);
 var sv = new ServerSocket(io);
 
-server.listen(config.port, '127.0.0.1');
+server.listen(config.port, '0.0.0.0');
 console.log("server listening at "+config.port);
 
 
