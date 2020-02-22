@@ -76,7 +76,7 @@ var downloadFile = function(e){
 };
 
 var uploadFile = function(e) {
-	e.preventDefault();	
+	e.preventDefault();
 	var targetFile = document.getElementById('target-file').value;
 	var file = $('#upload-file')[0].files;
 
@@ -86,16 +86,20 @@ var uploadFile = function(e) {
 	var fd = new FormData();
 	fd.append('targetfile', targetFile);
 	fd.append('file', file[0]);
-	var xhr = ajx({
-		method: 'post',
-		path: '/sgk/uploadfile'	
-	}, fd);
+	var xhr = new XMLHttpRequest();
+	const onFailed = (evt) => {$('#upload-btn').prop('disabled', false)};
+	xhr.upload.onabort = xhr.upload.onerror = xhr.upload.ontimeout = onFailed;
+	// var xhr = ajx({
+	// 	method: 'post',
+	// 	path: '/sgk/uploadfile'	
+	// }, fd);
 	xhr.upload.onprogress = (evt) => {
 		var percentComplete = parseInt((evt.loaded / evt.total ) * 100);
 		toggleProgressBar(percentComplete);
 	};
 	xhr.upload.onloadstart = (evt) => {
 		toggleProgressBar(0);
+		$('#upload-btn').prop('disabled', true);
 	};
 	xhr.upload.onloadend = (evt) => {
 		toggleProgressBar(100);
@@ -103,7 +107,10 @@ var uploadFile = function(e) {
 	xhr.addEventListener("load",(evt) => {
 		const { code, message, data } = JSON.parse(xhr.responseText);
 		malert(message, code != 'SGK_001');
+		$('#upload-btn').prop('disabled', false);
 	});
+	xhr.open('post', '/sgk/uploadfile');
+	xhr.send(fd);
 };
 
 var toggleProgressBar = function(val, ele = '') {
@@ -202,4 +209,8 @@ $(document).ready(function(){
 		$(this).parent().remove();
 	});
 	$('.editor-save').click(saveEditor);
+	setTimeout(() => {
+		$('#accordionSidebar').addClass('toggled');
+		$('body#page-top').removeClass('sidebar-toggled');
+	}, 100);
 });

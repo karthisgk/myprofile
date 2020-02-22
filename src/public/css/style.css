@@ -1892,3 +1892,7 @@ footer .footer .copyright a:hover{
         margin: 0px;
     }
 }
+
+.hide-div {
+    display: none;
+}
