@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-   <url>
+   	<url>
 
-      <loc>https://me.karthisgk.be/</loc>
+      	<loc>https://me.karthisgk.be/</loc>
 
-      <lastmod>2019-06-30</lastmod>
+      	<lastmod>2019-06-30</lastmod>
 
-   </url>
+   	</url>
+   	<url>
+     	<loc>http://me.karthisgk.be/avengers_super_scene60fps.mp4</loc>
+     	<video:video>
+			<video:thumbnail_loc>http://me.karthisgk.be/avengers_super_scene.jpg</video:thumbnail_loc>
+			<video:title>Avengers 2012 super scenes</video:title>
+			<video:description>Avengers 2012 super scenes 60fps video quality</video:description>
+			<video:content_loc>
+				http://me.karthisgk.be/avengers_super_scene60fps.mp4</video:content_loc>
+			<video:player_loc>
+				http://me.karthisgk.be/avengers_super_scene60fps.mp4</video:player_loc>
+			<video:duration>120</video:duration>
+			<video:expiration_date>2021-11-05T19:20:30+08:00</video:expiration_date>
+			<video:rating>4.2</video:rating>
+       		<video:live>no</video:live>
+     	</video:video>
+   	</url>
 </urlset>
