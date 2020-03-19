@@ -111,4 +111,13 @@ UserController.prototype.logOut = function(req, res, next){
 	next();
 };
 
+UserController.prototype.getUserProject = (req, res, next) => {
+	UserModel.find({project: true}, (err, data) => {
+		if(data && data.length) {
+			req.projectUser = data[0];
+			next();
+		}
+	});
+}
+
 module.exports = UserController;

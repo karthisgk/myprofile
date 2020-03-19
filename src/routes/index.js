@@ -10,6 +10,7 @@ var sgkController = new (require('../controllers/sgk.js'));
 var pdf = require('html-pdf');
 const express = require('express');
 const app = express.Router();
+const userController = new (require('../controllers/user'));
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -60,8 +61,11 @@ String.prototype.isEmail = function(){
   return pattern.test(this);
 };
 
-app.get('/', getSettings, (req, res) => {
+app.get('/', getSettings, userController.getUserProject, (req, res) => {
 	var sgk = req.generalSettings;
+	if(req.projectUser && req.projectUser.aboutMe) {
+		sgk.aboutMe = req.projectUser.aboutMe;
+	}
 	delete sgk.password;
 	delete sgk.smtp_user;
 	delete sgk.smtp_password;
