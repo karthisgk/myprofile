@@ -1,4 +1,4 @@
-const PRODUCTION = false;
+const PRODUCTION = true;
 module.exports = {
     PRODUCTION,
     liveUrl: PRODUCTION ? 'http://me.karthisgk.be/' : 'http://localhost:7070/',
