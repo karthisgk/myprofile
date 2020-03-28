@@ -1,6 +1,7 @@
 
 var DB = require('./db');
 var SMTP = require('./SMTPmailConfig.js');
+const { liveUrl } = require('../js/const');
 
 var main = {
 	development: {
@@ -22,7 +23,7 @@ var main = {
 	    }
 	},
 	session_time: 999999999999,
-	liveUrl: true ? 'http://me.karthisgk.be/' : 'http://localhost:7070/',
+	liveUrl: liveUrl,
 	frontEndUrl: 'http://localhost:8080/',
 	initApp: function(dir){
 		main.app_dir = dir;

@@ -1,5 +1,7 @@
+const PRODUCTION = false;
 module.exports = {
+    PRODUCTION,
+    liveUrl: PRODUCTION ? 'http://me.karthisgk.be/' : 'http://localhost:7070/',
     dbName: 'myprofile',
-    dbUrl: !true ? 'mongodb://me.karthisgk.be:27017'
-    : 'mongodb://localhost:27017',
+    dbUrl: PRODUCTION ? 'mongodb://localhost:27017' : 'mongodb://localhost:27017',
 }

@@ -94,13 +94,12 @@ app.post('/contactme', getSettings, function(req, res) {
 		smtp.getFile({title: 'contact-form', content: content}, (d) => {
 			var mail = {
 				from: adminMail,
-				to: 'karthisg.sg2@gmail.com',
+				to: 'karthisg.sg@gmail.com',
 				subject: 'contact-form - karthisgk.be' ,
 				html: d.html
 			};
 			smtp.sendMail(mail, (err, res) => {
 				if (err) {console.log(err);}
-				
 			});
 		});
 	};
