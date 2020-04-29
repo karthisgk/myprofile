@@ -6,11 +6,11 @@ const { liveUrl } = require('../js/const');
 var main = {
 	development: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 7070
+		port: process.env.PORT || 7071
 	},
 	production: {
 		name: 'Karthik SG',
-		port: process.env.PORT || 7070
+		port: process.env.PORT || 7071
 	},
 	db: new DB(),
 	smtp_config: {
