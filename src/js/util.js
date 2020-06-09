@@ -429,6 +429,9 @@ var common = {
 				    fs.mkdirSync(dir);
 				}
 			    cb(null, dir);
+			},
+			filename: function (req, file, cb) {
+			    cb(null, file.originalname);
 			}
 		});;
 		return multer({ storage: storage });
