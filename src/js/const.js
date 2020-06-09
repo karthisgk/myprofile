@@ -1,4 +1,4 @@
-const PRODUCTION = true;
+const PRODUCTION = false;
 module.exports = {
     PRODUCTION,
     liveUrl: PRODUCTION ? 'http://13.229.55.192/' : 'http://192.168.43.97:7071/',

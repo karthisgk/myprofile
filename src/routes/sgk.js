@@ -35,6 +35,8 @@ app.post('/saveabout', sgkController.auth(), userController.checkAccess(), sgkCo
 
 app.post('/uploadfile', sgkController.auth(), uploadFile.single('file'), sgkController.uploadFile);
 
+app.post('/uploadfiles', sgkController.auth(), userController.checkAccess(), util.uploader().array('files'));
+
 app.get('/editor', sgkController.auth(), sgkController.editor);
 app.post('/editor', sgkController.auth(), sgkController.saveEditor);
 module.exports = app;

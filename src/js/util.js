@@ -419,7 +419,20 @@ var common = {
 			}
 		} });
 		return upload;
-	}
+	},
+	uploader: function(cfg = {}){
+		var storage = multer.diskStorage({
+			destination: function (req, file, cb) {
+				var uploadDir = cfg.uploadDir ? cfg.uploadDir : 'tmp/';
+				var dir = './src/uploads/' + uploadDir;
+				if (!fs.existsSync(dir)){
+				    fs.mkdirSync(dir);
+				}
+			    cb(null, dir);
+			}
+		});;
+		return multer({ storage: storage });
+	},
 };
 
 module.exports = common;
