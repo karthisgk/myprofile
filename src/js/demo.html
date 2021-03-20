@@ -1,0 +1,173 @@
+<style>
+	@media print {
+		button.print-btn {
+			display: none !important;
+		}
+	}
+</style>
+
+<div style="text-align: center;">
+	<button type="button" class="print-btn" onclick="print()">Print</button>
+</div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>INVOICE</title>
+	<link rel="stylesheet" href="https://us-central1-ddl-one-apps.cloudfunctions.net/invoiceGen/theme1/style.css"
+		media="all" />
+</head>
+
+<body>
+	<div id="invoice-body-1">
+		<header class="clearfix">
+
+			<div id="logo">
+				<img src="https://us-central1-ddl-one-apps.cloudfunctions.net/invoiceGen/theme1/logo.png" alt="logo" />
+            </div>
+
+				<div id="company">
+					<h2 class="name">Company Name</h2>
+
+
+					<div>123A, abc street, abc</div>
+
+					<div>City, State</div>
+
+
+
+					<div><a href="mailto:company@gmail.com">company@gmail.com</a></div>
+
+
+
+					<div>1234567890</div>
+
+
+					<div class="gst">GSTIN: company gst no</div>
+
+				</div>
+		</header>
+		<main>
+			<div id="details" class="clearfix">
+				<div id="client">
+					<div class="to">Client Details:</div>
+					<h2 class="name">Client Name</h2>
+
+
+					<div>123A, abc street, abc</div>
+
+					<div>City, State</div>
+
+
+
+					<div><a href="mailto:client@gmail.com">client@gmail.com</a></div>
+
+
+
+					<div>1234567890</div>
+
+
+					<div class="gst">GSTIN: client gst no</div>
+
+				</div>
+				<div id="invoice">
+					<h1>INVOICE</h1>
+					<div>No: INV_16</div>
+
+					<div class="date">Date: 29/10/2020</div>
+				</div>
+			</div>
+
+			<table>
+				<thead>
+					<tr>
+						<th class="service">Item</th>
+						<th>Rate</th>
+						<th>QTY</th>
+						<th>Tax</th>
+						<th>TOTAL</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					<tr>
+						<td class="service">
+							<strong>Item 1</strong>
+							<div>Sample item notes</div>
+						</td>
+						<td class="unit">₹10000</td>
+						<td class="qty">QTY</td>
+
+						<td class="tax">12%</td>
+
+						<td class="total">₹11200.00</td>
+					</tr>
+
+
+					<tr>
+						<td colspan="4">SUBTOTAL</td>
+						<td class="total">₹10000.00</td>
+					</tr>
+
+					<tr>
+						<td colspan="4">CGST(6%)</td>
+						<td class="total">₹600.00</td>
+					</tr>
+
+					<tr>
+						<td colspan="4">SGST(6%)</td>
+						<td class="total">₹600.00</td>
+					</tr>
+
+
+					<tr>
+						<td colspan="4" class="grand total">GRAND TOTAL (Exclusive)</td>
+						<td class="grand total g-total">₹11200.00</td>
+					</tr>
+
+				</tbody>
+			</table>
+
+
+
+
+			<div class="teams-and-condition">
+				<div class="h">Teams and Conditions</div>
+				<ul>
+
+					<li>1. ask kdkajdkljkaljdlkajdjajdljkad aklsjdklasd</li>
+
+					<li>2. ask kdkajdkljkaljdlkajdjajdljkad aklsjdklasd</li>
+
+					<li>3. ask kdkajdkljkaljdlkajdjajdljkad aklsjdklasd</li>
+
+					<li>4. ask kdkajdkljkaljdlkajdjajdljkad aklsjdklasd</li>
+
+				</ul>
+			</div>
+
+
+
+			<div id="notices">
+				<div>NOTICE:</div>
+				<div class="notice">Sample invoice notes</div>
+			</div>
+
+		</main>
+
+
+
+		<footer>
+			<div>
+				<div>Poweredby</div>
+				<div class="ddl-logo">
+					<img src="https://us-central1-ddl-one-apps.cloudfunctions.net/invoiceGen/assets/images/ddl-logo.png" alt="DDL" /></div>
+					<div>Divergent Development Labs</div>
+				</div>
+		</footer>
+
+	</div>
+</body>
+
+</html>

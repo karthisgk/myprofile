@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema({
     password: { salt: String,  hash: String },
     verificationMail: mongoose.Schema.Types.Mixed,
     aboutMe: { type: Array, default: [] },
-    editor: mongoose.Schema.Types.Mixed,
+    editor: {
+        styles: String,
+        content: String,
+    },
     accessToken: { type: Array, default: [] },
     project: { type: Boolean, default: false },
     createdAt: { 

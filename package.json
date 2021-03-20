@@ -2,7 +2,7 @@
   "name": "myprofile",
   "version": "2.0.0",
   "description": "In Node Js, Basic Routes,Socket and MongoDb configuration and its Module",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js start",
     "test": "myprofile"

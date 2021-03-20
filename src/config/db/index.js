@@ -7,8 +7,8 @@ const settings = {
 };
 
 // db.createUser({ 
-// 	user: "***" , 
-// 	pwd: "***", 
+// 	user: "karthisgDOTsg" , 
+// 	pwd: "karthisgk1234", 
 // 	roles: ["userAdminAnyDatabase", "dbAdminAnyDatabase", "readWriteAnyDatabase"]
 // })
 

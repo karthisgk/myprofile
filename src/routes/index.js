@@ -51,6 +51,7 @@ var uploadFile = multer({ storage: multer.diskStorage({
 
 var passData = {};
 var baseurl = appConfig.liveUrl;
+const {liveUrl} = require('../js/const')
 
 String.prototype.isNumeric = function(){
   return /^[0-9]+$/.test(this);
@@ -61,16 +62,8 @@ String.prototype.isEmail = function(){
   return pattern.test(this);
 };
 
-app.get('/', getSettings, userController.getUserProject, (req, res) => {
-	var sgk = req.generalSettings;
-	if(req.projectUser && req.projectUser.aboutMe) {
-		sgk.aboutMe = req.projectUser.aboutMe;
-	}
-	delete sgk.password;
-	delete sgk.smtp_user;
-	delete sgk.smtp_password;
-	delete sgk.accessToken;
-	res.render('index', {sgk: sgk});
+app.get('/', (req, res) => {
+	res.render('index', {sgk: false});
 });
 
 app.post('/contactme', getSettings, function(req, res) {
@@ -194,6 +187,32 @@ app.get('/edited/karthik_resume.pdf', getSettings, sgkController.getResume((res,
 			res.status(404).send('404 Error');
 	});
 }));
+
+
+app.get('/ff', function(req, res){
+	const fs = require('fs');
+
+	fs.readdir(path.join(__dirname, '../uploads/files'), (err, files) => {
+		var respp = "";
+		files.forEach(file => {
+			respp += '<div><a href="http://192.168.43.157:7071/storage/files/'+file+'" target="_blank">' + file + '</a></div>';
+		});
+		res.send(respp);
+	});
+})
+
+app.get('/movies', function(req, res){
+	const fs = require('fs');
+
+	fs.readdir(path.join(__dirname, '../public/movie'), (err, files) => {
+		var respp = "";
+		files.forEach(file => {
+			respp += '<div><a href="'+liveUrl+'movie/'+file+'" target="_blank">' + file + '</a></div>';
+		});
+		res.send(respp);
+	});
+})
+
 /*var fieds = { fieldname: 'photos',
   originalname: '7.JPG',
   encoding: '7bit',

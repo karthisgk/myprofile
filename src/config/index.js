@@ -4,6 +4,12 @@ var SMTP = require('./SMTPmailConfig.js');
 const { liveUrl } = require('../js/const');
 
 var main = {
+	card: {
+		// no: 5242 7200 1333 4735,
+		// exp: 5/25,
+		// name: KARTHICK,
+		// CVV: 274
+	},
 	development: {
 		name: 'Karthik SG',
 		port: process.env.PORT || 7071
