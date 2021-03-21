@@ -195,7 +195,7 @@ app.get('/ff', function(req, res){
 	fs.readdir(path.join(__dirname, '../uploads/files'), (err, files) => {
 		var respp = "";
 		files.forEach(file => {
-			respp += '<div><a href="http://192.168.43.157:7071/storage/files/'+file+'" target="_blank">' + file + '</a></div>';
+			respp += `<div><a href="${liveUrl}storage/files/${file}" target="blank">${file}</a></div>`;
 		});
 		res.send(respp);
 	});
