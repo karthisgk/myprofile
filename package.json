@@ -4,7 +4,7 @@
   "description": "In Node Js, Basic Routes,Socket and MongoDb configuration and its Module",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js start",
+    "start": "node src/myprofile_app.js start",
     "test": "myprofile"
   },
   "repository": {
