@@ -33,7 +33,7 @@ app.use(session({
   }
 }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "20000mb" }));
 
 app.use(function(req, res, next){
     res.header('Access-Control-Allow-Origin', 'http://me.karthisgk.be/');
