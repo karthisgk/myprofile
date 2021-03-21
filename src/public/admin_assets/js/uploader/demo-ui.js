@@ -42,6 +42,12 @@ function ui_multi_update_file_status(id, status, message)
   $('#uploaderFile' + id).find('span').html(message).prop('class', 'status text-' + status);
 }
 
+function ui_multi_update_file_size(id, total, uploaded)
+{
+  $('#uploaderFile' + id).find('.size-info')
+  .html(`${uploaded}/${total}`)
+}
+
 // Updates a file progress, depending on the parameters it may animate it or change the color.
 function ui_multi_update_file_progress(id, percent, color, active)
 {

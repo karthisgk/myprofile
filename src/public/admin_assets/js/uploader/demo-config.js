@@ -40,9 +40,24 @@ $(function(){
       ui_multi_update_file_status(id, 'warning', 'Canceled by User');
       ui_multi_update_file_progress(id, 0, 'warning', false);
     },
-    onUploadProgress: function(id, percent){
+    onUploadProgress: function(id, percent, evt){
       // Updating file progress
       ui_multi_update_file_progress(id, percent);
+      if(evt.loaded > 1024){
+        var total = "", uploaded = ""
+        if(evt.total >= (1024 * 1024)){
+          total = (evt.total / 1024 / 1024).toFixed(2) + "mb"
+        }else{
+          total = (evt.total / 1024).toFixed(2) + "kb"
+        }
+
+        if(evt.loaded >= (1024 * 1024)){
+          uploaded = (evt.loaded / 1024 / 1024).toFixed(2) + "mb"
+        }else{
+          uploaded = (evt.loaded / 1024).toFixed(2) + "kb"
+        }
+        ui_multi_update_file_size(id, total, uploaded);
+      }
     },
     onUploadSuccess: function(id, data){
       // A file was successfully uploaded

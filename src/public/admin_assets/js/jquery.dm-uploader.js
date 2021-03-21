@@ -180,7 +180,7 @@
         if (event.lengthComputable) {
           percent = Math.ceil(position / total * 100);
         }
-        file.widget.settings.onUploadProgress.call(file.widget.element, file.id, percent);
+        file.widget.settings.onUploadProgress.call(file.widget.element, file.id, percent, event);
       }, false);
     }
 
