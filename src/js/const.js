@@ -1,7 +1,7 @@
 const PRODUCTION = false;
 module.exports = {
     PRODUCTION,
-    liveUrl: PRODUCTION ? 'http://13.229.55.192/' : 'http://192.168.0.6:7071/',
+    liveUrl: PRODUCTION ? 'http://13.229.55.192/' : 'http://192.168.0.26:7071/',
     dbName: 'myprofile',
     dbUrl: PRODUCTION ? 'mongodb://localhost:27017' : 'mongodb://localhost:27017',
 }
