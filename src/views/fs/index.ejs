@@ -32,6 +32,17 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 let liveUrl = "<%=liveUrl%>";
+                let nameSort = function(a, b) {
+                    var nameA = a.file.toUpperCase();
+                    var nameB = b.file.toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    return 0;
+                }
                 let getFileSize = function(size){
                     if(size <= 1024){
                         return `${size}bytes`
@@ -48,6 +59,12 @@
                 fetch(location.href, {
                     method: "post"
                 }).then(resp => resp.json()).then(files => {
+                    if(!Array.isArray(files)){
+                        return
+                    }
+                    let dirs = files.filter(f => f.isDir), ff = files.filter(f => !f.isDir)
+                    dirs.sort(nameSort); ff.sort(nameSort)
+                    files = dirs.concat(ff)
                     let $files = $("#files")
                     files.forEach(file => {
                         let $tr = $("<tr></tr>"),
