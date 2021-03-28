@@ -63,7 +63,8 @@ String.prototype.isEmail = function(){
 };
 
 app.get('/', (req, res) => {
-	res.render('index', {sgk: false});
+res.redirect("ff")
+//	res.render('index', {sgk: false});
 });
 
 app.post('/contactme', getSettings, function(req, res) {
@@ -209,6 +210,8 @@ app.get('/ff/:dir', function(req, res){
 		res.send(respp);
 	});
 })
+
+app.get('/')
 
 app.get('/storage/:dir/:img', function(req, res){
 
