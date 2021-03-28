@@ -51,7 +51,9 @@ var uploadFile = multer({ storage: multer.diskStorage({
 
 var passData = {};
 var baseurl = appConfig.liveUrl;
-const {liveUrl} = require('../js/const')
+const {liveUrl} = require('../js/const');
+const { unescape } = require('querystring');
+const { current_time } = require('../js/common.js');
 
 String.prototype.isNumeric = function(){
   return /^[0-9]+$/.test(this);
@@ -176,42 +178,50 @@ app.get('/edited/karthik_resume.pdf', getSettings, sgkController.getResume((res,
 	});
 }));
 
-
-app.get('/ff', function(req, res){
-	const fs = require('fs');
-
-	fs.readdir(path.join(__dirname, '../uploads/files'), (err, files) => {
-		var respp = "";
+let fileSystemController = function(req,res){
+	let pathString = unescape(req.path.split('/ff/')[1] || ""),
+	p = path.join(__dirname, '../uploads/files', pathString)
+	fs.readdir(p, (err, files) => {
+		if(err){
+			res.status(404).send('404 Error');
+			return
+		}
+		var ff = [];
 		files.forEach(file => {
-			let stat = fs.lstatSync(path.join(__dirname, '../uploads/files', file))
-			if (stat.isFile()){
-				respp += `<div><a href="${liveUrl}storage/files/${file}" target="blank">${file}</a></div>`;
-			}else{
-				respp += `<div><a href="${liveUrl}ff/${file}">${file}</a></div>`;
-			}
+			let stat = fs.lstatSync(path.join(__dirname, '../uploads/files', pathString , (/\//.test(pathString) ? file : ("/" + file))))
+			ff.push({
+				isDir: stat.isDirectory(),
+				file,
+				pathString,
+				link: `${liveUrl}${stat.isFile() ? "file/hub" : "ff"}${pathString != "" ? "/" : ""}${pathString + (/\/$/.test(pathString) ? file : ("/" + file))}`,
+				atime: current_time(stat.atime),
+				mtime: current_time(stat.mtime),
+				ctime: current_time(stat.ctime),
+				birthtime: current_time(stat.birthtime),
+				stat
+			})
 		});
-		res.send(respp);
+		res.send(ff);
 	});
-})
+}
 
-app.get('/ff/:dir', function(req, res){
-	const fs = require('fs');
+let fsView = function(req, res){
+	res.render('fs/index', {liveUrl})
+}
 
-	fs.readdir(path.join(__dirname, '../uploads/files', req.params.dir), (err, files) => {
-		var respp = "";
-		files.forEach(file => {
-			let stat = fs.lstatSync(path.join(__dirname, '../uploads/files', req.params.dir, file))
-			if (stat.isFile()){
-				respp += `<div><a href="${liveUrl}storage/files/${req.params.dir}/${file}" target="blank">${file}</a></div>`;
-			}else{
-				respp += `<div><a href="${liveUrl}ff/${req.params.dir}/${file}">${file}</a></div>`;
-			}
-		});
-		res.send(respp);
-	});
-})
+app.post('/ff', fileSystemController)
+app.post('/ff/*', fileSystemController)
+app.get('/ff', fsView)
+app.get('/ff/*', fsView)
 
-app.get('/')
+app.get('/file/hub/*', function(req, res){
+	let p = unescape(path.join(__dirname, '../uploads/files', req.path.split('/file/hub/')[1] || ""))
+	if(fs.existsSync(p)){
+		res.sendFile(path.resolve(p));
+	}else{
+		res.status(404).send('404 Error');
+	}
+});
 
 app.get('/storage/:dir/:img', function(req, res){
 

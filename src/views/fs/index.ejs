@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Satti DIR Tree</title>
+        <link rel="stylesheet" href="<%=liveUrl%>assets/css/bootstrap.min.css">
+        <script src="<%=liveUrl%>assets/js/jquery.min.js"></script>
+        <script src="<%=liveUrl%>assets/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-sm" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Size</th>
+                                <th>ModifiedAt</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="files">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                let liveUrl = "<%=liveUrl%>";
+                let getFileSize = function(size){
+                    if(size <= 1024){
+                        return `${size}bytes`
+                    }
+                    else if(size >= (1024 * 1024 * 1024)){
+                        return (size / 1024 / 1024).toFixed(2) + "gb"
+                    }
+                    else if(size >= (1024 * 1024)){
+                        return (size / 1024 / 1024).toFixed(2) + "mb"
+                    }else{
+                        return (size / 1024).toFixed(2) + "kb"
+                    }
+                }
+                fetch(location.href, {
+                    method: "post"
+                }).then(resp => resp.json()).then(files => {
+                    let $files = $("#files")
+                    files.forEach(file => {
+                        let $tr = $("<tr></tr>"),
+                        size = getFileSize(file.stat.size),
+                        $td1 = $("<td></td>"),
+                        $td2 = $("<td></td>"),
+                        $td3 = $("<td></td>"),
+                        $div1 = $(`<div></div>`),
+                        $div2 = $(`<div>${size}</div>`),
+                        $div3 = $(`<div>${file.mtime}</div>`),
+                        $icon = $(`<img width="20" height="20" src="${liveUrl}${file.isDir ? "folder-icon.svg" : "file-icon.svg"}">`)
+                        $a = $(`<a><span>&nbsp;${file.file}</span></a>`);
+                        $a.prepend($icon)
+                        if(!file.isDir){
+                            $a.attr("target", "blank")
+                        }
+                        $a.attr("href", file.link);
+                        $div1.append($a); $td1.append($div1);
+                        $td2.append($div2);
+                        $td3.append($div3);
+                        $tr.append($td1); $tr.append($td2); $tr.append($td3)
+                        $files.append($tr)
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>
