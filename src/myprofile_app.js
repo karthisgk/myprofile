@@ -8,6 +8,7 @@ var config = appConfig[process.env.NODE_ENV || 'development'];
 var bodyParser = require('body-parser');
 const { dbName, dbUrl } = require('./js/const');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 var app = express();
 app.use(express.json());
@@ -51,8 +52,10 @@ var io = socket.listen(server);
 var sv = new ServerSocket(io);
 
 async function startApp() { 
+  let dbAuth = {user:process.env.MONGO_USER,pass:process.env.MONGO_PASS, authSource:'admin'};
 	await mongoose.connect( dbUrl + "/" + dbName, { 
-		useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true
+		useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true,
+    ...dbAuth
 	});
 	server.listen(config.port, '0.0.0.0');
 	console.log("server listening at "+config.port);
