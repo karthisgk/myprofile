@@ -2,6 +2,7 @@
 var DB = require('./db');
 var SMTP = require('./SMTPmailConfig.js');
 const { liveUrl } = require('../js/const');
+const settingsModel = require('../models/settings.model');
 
 var main = {
 	card: {
@@ -46,15 +47,15 @@ var main = {
 		});
 	},
 	getSettings: (req, res, next) => {
-		new DB().get('settings', {}, settings => {
-			if(settings.length) {
-				req.generalSettings = settings[0];
+		settingsModel.aggregate([{$sort: {title: -1}}]).then(settings => {
+            if(settings && settings.length) {
+				req.settings = settings[0];
 				next();
 			} else {
 				res.status(400);
 				res.send('None shall pass');
 			}
-		});
+        })
 	}
 };
 
